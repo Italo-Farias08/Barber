@@ -1,9 +1,11 @@
 const lista = document.getElementById("lista");
-
-const BASE_URL = "https://barber-7p3h.onrender.com";
-
+const horarios = [
+  "08:00", "09:00", "10:00", "11:00",
+  "12:00", "13:00", "14:00", "15:00",
+  "16:00", "17:00", "18:00"
+];
 function carregarAgendamentos() {
-  fetch(`${BASE_URL}/agendamentos`)
+  fetch("https://barber-7p3h.onrender.com")
     .then(res => res.json())
     .then(dados => {
 
@@ -21,23 +23,28 @@ function carregarAgendamentos() {
         const div = document.createElement("div");
         div.classList.add("card");
 
+        // 🔥 se algum dia tiver status
+        if (item.status === "ocupado") {
+          div.classList.add("ocupado");
+        }
+
         const info = document.createElement("div");
         info.classList.add("info");
 
-        const data = item.data;
-        const horario = item.horario.toString().substring(0,5);
+       const data = item.data;
+const horario = item.horario.toString().substring(0,5);
 
-        info.innerHTML = `
-          <div>👤 <strong>${item.nome || "Sem nome"}</strong></div>
-          <div>📅 ${data}</div>
-          <div>⏰ ${horario}</div>
-        `;
+info.innerHTML = `
+  <div>👤 <strong>${item.nome || "Sem nome"}</strong></div>
+  <div>📅 ${data}</div>
+  <div>⏰ ${horario}</div>
+`;
 
         const btn = document.createElement("button");
         btn.innerText = "❌ Cancelar";
 
         btn.onclick = () => {
-          fetch(`${BASE_URL}/agendamentos/${item.id}`, {
+          fetch(`http://localhost:3000/agendamentos/${item.id}`, {
             method: "DELETE"
           })
           .then(() => div.remove());
