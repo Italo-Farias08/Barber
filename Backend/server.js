@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const sqlite3 = require("sqlite3").verbose();
+const Database = require("better-sqlite3");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
@@ -11,36 +11,36 @@ const SECRET = "barber_secret_key_123";
 app.use(express.json());
 app.use(cors({ origin: "*" }));
 
-const db = new sqlite3.Database("./banco.db");
+const db = new Database("banco.db");
 
 // =========================
 // 🔥 TABELAS
 // =========================
 
 // Agendamentos
-db.run(`
+db.prepare(`
 CREATE TABLE IF NOT EXISTS agendamentos (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   nome TEXT NOT NULL,
   data TEXT NOT NULL,
   horario TEXT NOT NULL
 )
-`);
+`).run();
 
 // Admins
-db.run(`
+db.prepare(`
 CREATE TABLE IF NOT EXISTS admins (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   username TEXT UNIQUE,
   password TEXT
 )
-`);
+`).run();
 
-// Índice único (evita duplicar horário)
-db.run(`
+// Índice único
+db.prepare(`
 CREATE UNIQUE INDEX IF NOT EXISTS idx_agenda_unico
 ON agendamentos (data, horario)
-`);
+`).run();
 
 // =========================
 // 🔥 VALIDAÇÕES
@@ -76,20 +76,19 @@ app.post("/agendar", (req, res) => {
   data = data.trim();
   horario = horario.trim();
 
-  db.run(
-    "INSERT INTO agendamentos (nome, data, horario) VALUES (?, ?, ?)",
-    [nome, data, horario],
-    function (err) {
-      if (err) {
-        if (err.message.includes("UNIQUE")) {
-          return res.json({ erro: "Horário já está ocupado!" });
-        }
-        return res.json({ erro: "Erro ao salvar agendamento" });
-      }
+  try {
+    const stmt = db.prepare(
+      "INSERT INTO agendamentos (nome, data, horario) VALUES (?, ?, ?)"
+    );
+    const info = stmt.run(nome, data, horario);
 
-      res.json({ sucesso: true, id: this.lastID });
+    res.json({ sucesso: true, id: info.lastInsertRowid });
+  } catch (err) {
+    if (err.message.includes("UNIQUE")) {
+      return res.json({ erro: "Horário já está ocupado!" });
     }
-  );
+    return res.json({ erro: "Erro ao salvar agendamento" });
+  }
 });
 
 // =========================
@@ -97,10 +96,12 @@ app.post("/agendar", (req, res) => {
 // =========================
 
 app.get("/agendamentos", (req, res) => {
-  db.all("SELECT * FROM agendamentos", [], (err, rows) => {
-    if (err) return res.json([]);
+  try {
+    const rows = db.prepare("SELECT * FROM agendamentos").all();
     res.json(rows);
-  });
+  } catch {
+    res.json([]);
+  }
 });
 
 // =========================
@@ -112,14 +113,15 @@ app.get("/agendamentos/:data", (req, res) => {
 
   if (!validarData(data)) return res.json([]);
 
-  db.all(
-    "SELECT horario FROM agendamentos WHERE data = ?",
-    [data],
-    (err, rows) => {
-      if (err) return res.json([]);
-      res.json(rows);
-    }
-  );
+  try {
+    const rows = db
+      .prepare("SELECT horario FROM agendamentos WHERE data = ?")
+      .all(data);
+
+    res.json(rows);
+  } catch {
+    res.json([]);
+  }
 });
 
 // =========================
@@ -133,15 +135,12 @@ app.delete("/agendamentos/:id", (req, res) => {
     return res.json({ erro: "ID inválido" });
   }
 
-  db.run(
-    "DELETE FROM agendamentos WHERE id = ?",
-    [id],
-    function (err) {
-      if (err) return res.json({ erro: "Erro ao deletar" });
-
-      res.json({ sucesso: true });
-    }
-  );
+  try {
+    db.prepare("DELETE FROM agendamentos WHERE id = ?").run(id);
+    res.json({ sucesso: true });
+  } catch {
+    res.json({ erro: "Erro ao deletar" });
+  }
 });
 
 // =========================
@@ -151,19 +150,17 @@ app.delete("/agendamentos/:id", (req, res) => {
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
 
-  db.get(
-    "SELECT * FROM admins WHERE username = ?",
-    [username],
-    async (err, user) => {
-      if (err) return res.json({ erro: "Erro no servidor" });
+  try {
+    const user = db
+      .prepare("SELECT * FROM admins WHERE username = ?")
+      .get(username);
 
-      if (!user) {
-        return res.json({ erro: "Usuário não existe" });
-      }
+    if (!user) {
+      return res.json({ erro: "Usuário não existe" });
+    }
 
-      const senhaOk = await bcrypt.compare(password, user.password);
-
-      if (!senhaOk) {
+    bcrypt.compare(password, user.password, (err, senhaOk) => {
+      if (err || !senhaOk) {
         return res.json({ erro: "Senha incorreta" });
       }
 
@@ -174,12 +171,14 @@ app.post("/login", (req, res) => {
       );
 
       res.json({ token });
-    }
-  );
+    });
+  } catch {
+    res.json({ erro: "Erro no servidor" });
+  }
 });
 
 // =========================
-// 🔒 MIDDLEWARE (opcional)
+// 🔒 MIDDLEWARE
 // =========================
 
 function autenticar(req, res, next) {
@@ -197,7 +196,6 @@ function autenticar(req, res, next) {
   }
 }
 
-// (se quiser proteger)
 app.get("/admin", autenticar, (req, res) => {
   res.json({ ok: true, msg: "Área admin liberada" });
 });
