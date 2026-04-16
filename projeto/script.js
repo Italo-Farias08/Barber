@@ -153,7 +153,7 @@ confirmarNomeBtn.addEventListener("click", () => {
   const dataFormatada = dataSelecionada.toISOString().split("T")[0];
   const horarioFinal = horarioSelecionado;
 
-  fetch("http://localhost:3000/agendar", {
+  fetch("https://barber-7p3h.onrender.com/agendar", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
