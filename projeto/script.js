@@ -82,7 +82,7 @@ function selecionarDia(elemento, data) {
 
   horariosDiv.innerHTML = "<h3>Carregando horários...</h3>";
 
-  fetch(`http://localhost:3000/agendamentos/${dataFormatada}`)
+  fetch(`https://barber-7p3h.onrender.com/agendamentos/${dataFormatada}`)
     .then(res => res.json())
     .then(ocupados => {
 
