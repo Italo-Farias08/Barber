@@ -1,0 +1,96 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Bebas Neue', sans-serif;
+}
+html{
+    height: 100vh;
+    background-color: #000000;
+}
+body {
+  background: radial-gradient(circle at top, #111, #000000);
+  color: #f5f5f5;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+header {
+  text-align: center;
+  padding: 30px 10px;
+  background: linear-gradient(90deg, #0a0a0a, #111);
+  border-bottom: 1px solid rgba(245, 196, 0, 0.3);
+  width: 100vw;
+}
+header h1 {
+  font-size: 2.5em;
+  color: #f5c400;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+/* MAIN */
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 25px;
+  text-align: center;
+  padding: 20px;
+  width: 300px;
+  height: 100vh;
+}
+
+main h2 {
+  font-size: 1.4em;
+  color: #eaeaea;
+  letter-spacing: 1px;
+}
+
+/* IMAGEM PRINCIPAL */
+#fotoprincipal {
+  width: 280px;
+  height: 320px;
+  object-fit: cover;
+  border: 2px solid #f5c400;
+  border-radius: 12%;
+   box-shadow: 0 0px 10px rgba(245, 196, 0, 0.658);
+  transition: 0.3s ease;
+}
+
+/* HOVER DA FOTO */
+#fotoprincipal:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0px 20px rgba(245,196,0,0.2);
+}
+
+/* LINK (remove estilo) */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* FOOTER */
+footer {
+  text-align: center;
+  padding: 12px;
+  border-top: 1px solid #222;
+  background: #0a0a0a;
+  font-size: 20px;
+  width: 100vw;
+  
+}
+
+footer a {
+  color: #f5c400;
+  margin: 0;
+  transition: 0.2s;
+}
+
+footer a:hover {
+  opacity: 0.8;
+}

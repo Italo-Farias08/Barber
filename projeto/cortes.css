@@ -1,0 +1,111 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Bebas Neue', sans-serif;
+  text-decoration: none;
+}
+html{
+  height: 100vh;
+  background-color: black;
+}
+body {
+  background: radial-gradient(circle at top,  #0a0a0a, #111);
+  color: #f5f5f5;
+}
+
+/* HEADER PREMIUM */
+header {
+  text-align: center;
+  padding: 35px 10px;
+  background: linear-gradient(90deg, #0a0a0a, #111);
+  border-bottom: 1px solid rgba(255, 196, 0, 0.4);
+}
+
+header h1 {
+  font-size: 2em;
+  letter-spacing: 3px;
+  color: #f5c400;
+  text-transform: uppercase;
+}
+
+/* TITULO */
+main h2 {
+  text-align: center;
+  margin: 30px 0;
+  font-size: 30px;
+  color: #eaeaea;
+  letter-spacing: 1px;
+}
+
+/* GRID */
+main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 25px; 
+  padding: 10px;}
+
+/* LINK */
+main a {
+  text-decoration: none;
+}
+
+/* CARD PREMIUM */
+section {
+  background: linear-gradient(145deg, #141414, #0c0c0c);
+  border: 1px solid rgba(255, 196, 0, 0.418);
+  border-radius: 16px;
+  overflow: hidden;
+  width: 300px;
+  transition: 0.25s ease;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+  position: relative;
+}
+
+/* brilho sutil no hover */
+section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top, rgba(245,196,0,0.08), transparent 60%);
+  opacity: 0;
+  transition: 0.3s;
+}
+
+section:hover::before {
+  opacity: 1;
+}
+
+section:hover {
+  transform: translateY(-6px);
+  border-color: rgba(245, 196, 0, 0.5);
+}
+
+/* IMAGEM */
+section img {
+  width: 100%;
+  height: 190px;
+  object-fit: cover;
+  filter: contrast(1.1) brightness(0.9);
+}
+
+/* TEXTO */
+section h3 {
+  font-size: 26px;
+  color: #f5c400;
+  margin: 12px 14px 5px;
+  letter-spacing: 1px;
+}
+
+section p {
+  margin: 0 14px 16px;
+  font-size: 18px;
+  color: #d6d6d6;
+}
+
+/* EFEITO DE CLICK SUAVE */
+section:active {
+  transform: scale(0.98);
+}
