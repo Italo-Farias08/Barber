@@ -4,7 +4,8 @@
   box-sizing: border-box;
   font-family: 'Arial';
 }
-html{
+
+html {
   height: 100vh;
   background-color: #000;
 }
@@ -16,10 +17,12 @@ body {
   align-items: center;
   background: radial-gradient(circle at top, #1a1a1a, #000);
   overflow: hidden;
+  position: relative;
 }
 
 /* brilho de fundo */
-body::before {
+body::before,
+body::after {
   content: "";
   position: absolute;
   width: 500px;
@@ -29,15 +32,14 @@ body::before {
   opacity: 0.15;
   top: -100px;
   left: -100px;
+
+  /* 🔥 ESSENCIAL: evita bloquear clique */
+  pointer-events: none;
 }
 
 body::after {
-  content: "";
-  position: absolute;
   width: 400px;
   height: 400px;
-  background: #ffcc00;
-  filter: blur(200px);
   opacity: 0.1;
   bottom: -100px;
   right: -100px;
@@ -52,6 +54,7 @@ body::after {
   border: 1px solid rgba(255,204,0,0.2);
   box-shadow: 0 0 40px rgba(0,0,0,0.6);
   position: relative;
+  z-index: 2; /* garante que fica acima do brilho */
 }
 
 .logo {
