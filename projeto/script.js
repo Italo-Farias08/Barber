@@ -89,14 +89,23 @@ function selecionarDia(elemento, data) {
 function renderizarHorarios(horariosOcupados) {
   horariosDiv.innerHTML = "<h3>Horários disponíveis:</h3>";
 
-  horarios.forEach(h => {
+  const agora = new Date();
 
+  horarios.forEach(h => {
     const btn = document.createElement("div");
     btn.classList.add("horario");
     btn.innerText = h;
 
-    if (horariosOcupados.includes(h)) {
-      btn.innerText += " ❌ OCUPADO";
+    // 🔥 cria data + hora do horário
+    const [hora, minuto] = h.split(":");
+    const dataHora = new Date(dataSelecionada);
+    dataHora.setHours(hora, minuto, 0, 0);
+
+    const jaPassou = dataHora < agora;
+
+    // ❌ BLOQUEIA SE ESTIVER OCUPADO OU JÁ PASSOU
+    if (horariosOcupados.includes(h) || jaPassou) {
+      btn.innerText += " ❌";
       btn.style.opacity = "0.4";
       btn.style.pointerEvents = "none";
     } else {
