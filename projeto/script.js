@@ -1,28 +1,20 @@
 const diasDiv = document.getElementById("dias");
 const horariosDiv = document.getElementById("horarios");
 const botao = document.querySelector(".btn-confirmar");
-
 const modal = document.getElementById("modalNome");
 const inputNome = document.getElementById("nomeCliente");
 const confirmarNomeBtn = document.getElementById("confirmarNome");
-
 let dataSelecionada = null;
 let horarioSelecionado = null;
-
-// horários
 const horarios = [];
 for (let i = 8; i <= 21; i++) {
   horarios.push(`${i.toString().padStart(2, "0")}:00`);
 }
-
 const nomesDias = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 const hoje = new Date();
-
-// 🔥 NOTIFICAÇÃO
 function mostrarMensagem(texto, cor = "#c59d5f") {
   const msg = document.createElement("div");
   msg.innerText = texto;
-
   msg.style.position = "fixed";
   msg.style.bottom = "20px";
   msg.style.left = "50%";
@@ -35,17 +27,13 @@ function mostrarMensagem(texto, cor = "#c59d5f") {
   msg.style.zIndex = "9999";
   msg.style.opacity = "0";
   msg.style.transition = "0.5s";
-
   document.body.appendChild(msg);
-
   setTimeout(() => msg.style.opacity = "1", 10);
   setTimeout(() => {
     msg.style.opacity = "0";
     setTimeout(() => msg.remove(), 500);
   }, 2500);
 }
-
-// DIAS
 function gerarProximosDias(qtd = 10) {
   diasDiv.innerHTML = "";
 

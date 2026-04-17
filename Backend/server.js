@@ -12,12 +12,6 @@ app.use(express.json());
 app.use(cors({ origin: "*" }));
 
 const db = new Database("banco.db");
-
-// =========================
-// 🔥 TABELAS
-// =========================
-
-// Agendamentos
 db.prepare(`
 CREATE TABLE IF NOT EXISTS agendamentos (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -26,8 +20,6 @@ CREATE TABLE IF NOT EXISTS agendamentos (
   horario TEXT NOT NULL
 )
 `).run();
-
-// Admins
 db.prepare(`
 CREATE TABLE IF NOT EXISTS admins (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -36,34 +28,22 @@ CREATE TABLE IF NOT EXISTS admins (
 )
 `).run();
 
-// Índice único
 db.prepare(`
 CREATE UNIQUE INDEX IF NOT EXISTS idx_agenda_unico
 ON agendamentos (data, horario)
 `).run();
-
-// =========================
-// 🔥 VALIDAÇÕES
-// =========================
-
 function validarNome(nome) {
   if (!nome) return false;
   if (nome.length < 2 || nome.length > 50) return false;
   if (!/^[A-Za-zÀ-ÿ\s]+$/.test(nome)) return false;
   return true;
 }
-
 function validarData(data) {
   return /^\d{4}-\d{2}-\d{2}$/.test(data);
 }
-
 function validarHorario(horario) {
   return /^\d{2}:\d{2}$/.test(horario);
 }
-
-// =========================
-// 🔥 AGENDAR
-// =========================
 
 app.post("/agendar", (req, res) => {
   let { nome, data, horario } = req.body;
