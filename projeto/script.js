@@ -171,9 +171,7 @@ confirmarNomeBtn.addEventListener("click", () => {
     return;
   }
 
-const dataFormatada = `${dataSelecionada.getFullYear()}-${String(
-  dataSelecionada.getMonth() + 1
-).padStart(2, "0")}-${String(dataSelecionada.getDate()).padStart(2, "0")}`;
+  const dataFormatada = dataSelecionada.toISOString().split("T")[0];
   const horarioFinal = horarioSelecionado;
 
   // 🔥 MONTA WHATSAPP ANTES (IMPORTANTE)
