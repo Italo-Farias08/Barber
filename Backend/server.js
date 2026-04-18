@@ -83,7 +83,7 @@ app.get("/agendamentos", (req, res) => {
 // =========================
 // HORÁRIOS OCUPADOS
 // =========================
-app.get("/agendamentos/:data", (req, res) => {
+ app.get("/agendamentos/data/:data", (req, res) => {
   try {
     const rows = db.prepare(`
       SELECT TRIM(horario) AS horario
