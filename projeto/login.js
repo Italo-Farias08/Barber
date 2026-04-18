@@ -43,6 +43,7 @@ async function login() {
   }, 800);
 
 } catch (err) {
-  msg.innerText = "Erro no servidor";
+  console.log(err);
+  msg.innerText = "Erro no servidor: " + err.message;
 }
 }

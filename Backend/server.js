@@ -139,14 +139,11 @@ app.delete("/agendamentos/concluidos", (req, res) => {
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
 
-  // login simples (você pode melhorar depois)
   if (username === "admin" && password === "123") {
-    return res.json({
-      token: "token_fake_123"
-    });
+    return res.json({ token: "token_fake_123" });
   }
 
-  return res.json({ erro: "Usuário ou senha inválidos" });
+  return res.status(401).json({ erro: "Usuário ou senha inválidos" });
 });
 
 // =========================
