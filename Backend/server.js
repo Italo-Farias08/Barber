@@ -34,7 +34,9 @@ CREATE TABLE IF NOT EXISTS gastos (
   data TEXT DEFAULT (DATE('now'))
 )
 `).run();
-
+app.get("/teste", (req, res) => {
+  res.json({ ok: true });
+});
 
 // =========================
 // AGENDAR
