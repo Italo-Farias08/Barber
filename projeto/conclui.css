@@ -17,27 +17,31 @@ body {
 header {
   background: #111;
   border-bottom: 2px solid #ffcc0088;
-  padding: 20px;
-
+  padding: 15px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 10px;
+  flex-wrap: wrap; /* 🔥 ESSENCIAL */
 }
 
 header h1 {
   color: #ffcc00;
-  font-size: 1.6em;
+  font-size: 1.4em;
+  flex: 1; /* ocupa espaço disponível */
+  min-width: 120px;
 }
 
 header a {
   text-decoration: none;
   color: #000;
   background: #eebe00;
-  padding: 8px 14px;
+  padding: 8px 12px;
   border-radius: 8px;
   font-weight: bold;
   transition: 0.2s;
-  font-size: 16px;
+  font-size: 14px;
+  white-space: nowrap; /* 🔥 não quebra botão */
 }
 
 header a:hover {
@@ -118,8 +122,17 @@ header a:hover {
   transition: 0.2s;
   font-size: 16px;
 }
+/* BOTÃO APAGAR */
+.btn-apagar {
+  background: #ff3b3b;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  white-space: nowrap;
+}
+@media (max-width: 500px) {
 
-.btn-apagar:hover {
-  background: #e60000;
-  transform: scale(1.05);
 }
