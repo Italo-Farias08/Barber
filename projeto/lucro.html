@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Financeiro</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+}
+
+body {
+  background: #0b0b0b;
+  color: #fff;
+  padding: 30px;
+}
+
+/* HEADER */
+h1 {
+  font-size: 28px;
+  margin-bottom: 25px;
+  color: #ffc107;
+}
+
+/* GRID */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+/* CARDS */
+.card {
+  background: #141414;
+  border-radius: 14px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #222;
+  transition: 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  border-color: #ffc10755;
+}
+
+.card h2 {
+  font-size: 14px;
+  color: #aaa;
+  margin-bottom: 10px;
+}
+
+.valor {
+  font-size: 26px;
+  font-weight: 600;
+}
+
+/* cores */
+.lucro { color: #00e676; }
+.gastos { color: #ff5252; }
+.ganhos { color: #ffc107; }
+
+/* FORM */
+.form {
+  background: #141414;
+  padding: 20px;
+  border-radius: 14px;
+  margin-bottom: 30px;
+  border: 1px solid #222;
+}
+
+.form h3 {
+  margin-bottom: 15px;
+}
+
+.inputs {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+input {
+  flex: 1;
+  padding: 12px;
+  background: #0b0b0b;
+  border: 1px solid #333;
+  color: #fff;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+input:focus {
+  border-color: #ffc107;
+  outline: none;
+}
+
+/* BOTÃO */
+button {
+  padding: 12px 18px;
+  background: #ffc107;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.2s;
+  font-size: 16px;
+}
+
+button:hover {
+  background: #e0a800;
+}
+
+/* LISTA */
+.lista {
+  background: #141414;
+  border-radius: 14px;
+  padding: 20px;
+  border: 1px solid #222;
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #222;
+}
+
+.item:last-child {
+  border: none;
+}
+
+.item span {
+  color: #aaa;
+}
+
+/* animação */
+.fade {
+  animation: fade 0.4s ease;
+}
+.secao {
+  margin-top: 40px;
+  margin-bottom: 15px;
+  font-size: 18px;
+  color: #ffc107;
+}
+
+/* grid menor pra separar visualmente */
+.grid-small {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  max-width: 600px;
+}
+
+@keyframes fade {
+  from {opacity: 0; transform: translateY(10px);}
+  to {opacity: 1;}
+}
+</style>
+</head>
+
+<body>
+
+<h1>💰 Painel Financeiro</h1>
+
+<!-- CARDS PRINCIPAIS -->
+<div class="grid">
+
+  <div class="card fade">
+    <h2>Ganhos</h2>
+    <div class="valor ganhos" id="ganhos">R$ 0</div>
+  </div>
+
+  <div class="card fade">
+    <h2>Gastos</h2>
+    <div class="valor gastos" id="gastos">R$ 0</div>
+  </div>
+
+  <div class="card fade">
+    <h2>Lucro Real</h2>
+    <div class="valor lucro" id="lucro">R$ 0</div>
+  </div>
+
+  <!-- SEMANA E MÊS (AGORA NO FINAL, MAS DENTRO DA GRID) -->
+  
+
+</div>
+
+<!-- FORM -->
+<div class="form fade">
+  <h3>Adicionar gasto</h3>
+
+  <div class="inputs">
+    <input id="desc" placeholder="Ex: Máquina, Produto">
+    <input id="valor" type="number" placeholder="Valor">
+    <button onclick="addGasto()">Salvar</button>
+  </div>
+</div>
+
+<!-- LISTA -->
+<div class="lista fade">
+  <h3>Gastos</h3>
+  <div id="lista"></div>
+</div>
+<script src="lucro.js"></script>
+
+</body>
+</html>

@@ -1,83 +1,79 @@
 const express = require("express");
 const cors = require("cors");
 const Database = require("better-sqlite3");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 
 const app = express();
 
-const SECRET = "barber_secret_key_123";
-
 app.use(express.json());
-app.use(cors({ origin: "*" }));
+app.use(cors());
 
 const db = new Database("banco.db");
+
+// =========================
+// TABELA AGENDAMENTOS
+// =========================
 db.prepare(`
 CREATE TABLE IF NOT EXISTS agendamentos (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   nome TEXT NOT NULL,
   data TEXT NOT NULL,
-  horario TEXT NOT NULL
+  horario TEXT NOT NULL,
+  valor REAL DEFAULT 0,
+  status TEXT DEFAULT 'pendente'
 )
 `).run();
+
+// =========================
+// TABELA GASTOS (FALTAVA ISSO)
+// =========================
 db.prepare(`
-CREATE TABLE IF NOT EXISTS admins (
+CREATE TABLE IF NOT EXISTS gastos (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  username TEXT UNIQUE,
-  password TEXT
+  descricao TEXT,
+  valor REAL DEFAULT 0,
+  data TEXT DEFAULT (DATE('now'))
 )
 `).run();
 
-db.prepare(`
-CREATE UNIQUE INDEX IF NOT EXISTS idx_agenda_unico
-ON agendamentos (data, horario)
-`).run();
-function validarNome(nome) {
-  if (!nome) return false;
-  if (nome.length < 2 || nome.length > 50) return false;
-  if (!/^[A-Za-zÀ-ÿ\s]+$/.test(nome)) return false;
-  return true;
-}
-function validarData(data) {
-  return /^\d{4}-\d{2}-\d{2}$/.test(data);
-}
-function validarHorario(horario) {
-  return /^\d{2}:\d{2}$/.test(horario);
-}
 
+// =========================
+// AGENDAR
+// =========================
 app.post("/agendar", (req, res) => {
-  let { nome, data, horario } = req.body;
-
-  if (!validarNome(nome)) return res.json({ erro: "Nome inválido" });
-  if (!validarData(data)) return res.json({ erro: "Data inválida" });
-  if (!validarHorario(horario)) return res.json({ erro: "Horário inválido" });
-
-  nome = nome.trim();
-  data = data.trim();
-  horario = horario.trim();
+  const { nome, data, horario, valor } = req.body;
 
   try {
-    const stmt = db.prepare(
-      "INSERT INTO agendamentos (nome, data, horario) VALUES (?, ?, ?)"
-    );
-    const info = stmt.run(nome, data, horario);
+    const existe = db.prepare(`
+  SELECT id FROM agendamentos
+  WHERE data = ? AND horario = ? AND status = 'pendente'
+`).get(data, horario);
 
-    res.json({ sucesso: true, id: info.lastInsertRowid });
-  } catch (err) {
-    if (err.message.includes("UNIQUE")) {
-      return res.json({ erro: "Horário já está ocupado!" });
+    if (existe) {
+      return res.json({ erro: "Horário já ocupado!" });
     }
-    return res.json({ erro: "Erro ao salvar agendamento" });
+
+    db.prepare(`
+      INSERT INTO agendamentos (nome, data, horario, valor)
+      VALUES (?, ?, ?, ?)
+    `).run(nome, data, horario, Number(valor) || 0);
+
+    res.json({ sucesso: true });
+
+  } catch (err) {
+    console.log(err);
+    res.json({ erro: "Erro ao agendar" });
   }
 });
 
 // =========================
-// 🔥 LISTAR TODOS
+// LISTAR TODOS
 // =========================
-
 app.get("/agendamentos", (req, res) => {
   try {
-    const rows = db.prepare("SELECT * FROM agendamentos").all();
+    const rows = db.prepare(`
+      SELECT * FROM agendamentos ORDER BY id DESC
+    `).all();
+
     res.json(rows);
   } catch {
     res.json([]);
@@ -85,18 +81,16 @@ app.get("/agendamentos", (req, res) => {
 });
 
 // =========================
-// 🔥 POR DATA
+// HORÁRIOS OCUPADOS
 // =========================
-
 app.get("/agendamentos/:data", (req, res) => {
-  const data = req.params.data;
-
-  if (!validarData(data)) return res.json([]);
-
   try {
-    const rows = db
-      .prepare("SELECT horario FROM agendamentos WHERE data = ?")
-      .all(data);
+    const rows = db.prepare(`
+      SELECT TRIM(horario) AS horario
+      FROM agendamentos
+      WHERE data = ?
+      AND status = 'pendente'
+    `).all(req.params.data);
 
     res.json(rows);
   } catch {
@@ -105,87 +99,134 @@ app.get("/agendamentos/:data", (req, res) => {
 });
 
 // =========================
-// 🔥 DELETAR
+// CONCLUIR
 // =========================
+app.put("/agendamentos/concluir/:id", (req, res) => {
+  try {
+    db.prepare(`
+      UPDATE agendamentos
+      SET status = 'concluido'
+      WHERE id = ?
+    `).run(req.params.id);
 
-app.delete("/agendamentos/:id", (req, res) => {
-  const id = req.params.id;
+    res.json({ sucesso: true });
 
-  if (!id || isNaN(id)) {
-    return res.json({ erro: "ID inválido" });
+  } catch (err) {
+    console.log(err);
+    res.json({ erro: "Erro ao concluir" });
   }
+});
+
+// =========================
+// APAGAR CONCLUÍDOS (⚠️ TEM QUE VIR ANTES DO /:id)
+// =========================
+app.delete("/agendamentos/concluidos", (req, res) => {
+  try {
+    db.prepare(`
+      DELETE FROM agendamentos
+      WHERE status = 'concluido'
+    `).run();
+
+    res.json({ sucesso: true });
+
+  } catch (err) {
+    console.log(err);
+    res.json({ erro: "Erro ao apagar concluídos" });
+  }
+});
+
+// =========================
+// CANCELAR / ID (DEIXA POR ÚLTIMO)
+// =========================
+app.delete("/agendamentos/:id", (req, res) => {
+  try {
+    db.prepare(`
+      UPDATE agendamentos
+      SET status = 'cancelado'
+      WHERE id = ?
+    `).run(req.params.id);
+
+    res.json({ sucesso: true });
+
+  } catch {
+    res.json({ erro: "Erro ao cancelar" });
+  }
+});
+
+// =========================
+// LUCRO REAL (CORRIGIDO)
+// =========================
+app.get("/lucro-real", (req, res) => {
+  try {
+    const ganhos = db.prepare(`
+      SELECT SUM(valor) as total FROM agendamentos WHERE status = 'concluido'
+    `).get();
+
+    const gastos = db.prepare(`
+      SELECT SUM(valor) as total FROM gastos
+    `).get();
+
+    const totalGanhos = ganhos.total || 0;
+    const totalGastos = gastos.total || 0;
+
+    res.json({
+      ganhos: totalGanhos,
+      gastos: totalGastos,
+      lucro: totalGanhos - totalGastos
+    });
+
+  } catch (err) {
+    console.log(err);
+    res.json({ ganhos: 0, gastos: 0, lucro: 0 });
+  }
+});
+app.post("/gastos", (req, res) => {
+  const { descricao, valor } = req.body;
 
   try {
-    db.prepare("DELETE FROM agendamentos WHERE id = ?").run(id);
+    if (!descricao || !valor) {
+      return res.json({ erro: "Dados inválidos" });
+    }
+
+    db.prepare(`
+      INSERT INTO gastos (descricao, valor)
+      VALUES (?, ?)
+    `).run(descricao, Number(valor));
+
     res.json({ sucesso: true });
-  } catch {
+
+  } catch (err) {
+    console.log(err);
+    res.json({ erro: "Erro ao salvar gasto" });
+  }
+});
+app.get("/gastos", (req, res) => {
+  try {
+    const gastos = db.prepare(`
+      SELECT * FROM gastos ORDER BY id DESC
+    `).all();
+
+    res.json(gastos);
+
+  } catch (err) {
+    console.log(err);
+    res.json([]);
+  }
+});
+app.delete("/gastos/:id", (req, res) => {
+  try {
+    db.prepare(`
+      DELETE FROM gastos WHERE id = ?
+    `).run(req.params.id);
+
+    res.json({ sucesso: true });
+
+  } catch (err) {
+    console.log(err);
     res.json({ erro: "Erro ao deletar" });
   }
 });
 
-// =========================
-// 🔐 LOGIN ADMIN
-// =========================
-
-app.post("/login", (req, res) => {
-  const { username, password } = req.body;
-
-  try {
-    const user = db
-      .prepare("SELECT * FROM admins WHERE username = ?")
-      .get(username);
-
-    if (!user) {
-      return res.json({ erro: "Usuário não existe" });
-    }
-
-    bcrypt.compare(password, user.password, (err, senhaOk) => {
-      if (err || !senhaOk) {
-        return res.json({ erro: "Senha incorreta" });
-      }
-
-      const token = jwt.sign(
-        { id: user.id, username: user.username },
-        SECRET,
-        { expiresIn: "2h" }
-      );
-
-      res.json({ token });
-    });
-  } catch {
-    res.json({ erro: "Erro no servidor" });
-  }
-});
-
-// =========================
-// 🔒 MIDDLEWARE
-// =========================
-
-function autenticar(req, res, next) {
-  const token = req.headers.authorization;
-
-  if (!token) {
-    return res.status(401).json({ erro: "Sem token" });
-  }
-
-  try {
-    jwt.verify(token, SECRET);
-    next();
-  } catch {
-    return res.status(401).json({ erro: "Token inválido" });
-  }
-}
-
-app.get("/admin", autenticar, (req, res) => {
-  res.json({ ok: true, msg: "Área admin liberada" });
-});
-
-// =========================
-// 🚀 START
-// =========================
-
-const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => {
-  console.log("Servidor rodando na porta " + PORT);
+app.listen(3000, () => {
+  console.log("🚀 Servidor rodando na porta 3000");
 });

@@ -1,0 +1,125 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Inter", Arial, sans-serif;
+}
+
+body {
+  background: #0d0d0d;
+  color: #fff;
+  min-height: 100vh;
+}
+
+/* HEADER */
+header {
+  background: #111;
+  border-bottom: 2px solid #ffcc0088;
+  padding: 20px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+header h1 {
+  color: #ffcc00;
+  font-size: 1.6em;
+}
+
+header a {
+  text-decoration: none;
+  color: #000;
+  background: #eebe00;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-weight: bold;
+  transition: 0.2s;
+  font-size: 16px;
+}
+
+header a:hover {
+  transform: scale(1.05);
+  filter: brightness(1.1);
+}
+
+/* LISTA */
+#lista {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* CARD */
+.card {
+  background: #151515;
+  border-left: 4px solid #ffcc00de;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  position: relative;
+  overflow: hidden;
+}
+
+/* GARANTE QUE NÃO TEM “AMARELO VAZANDO” */
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  pointer-events: none;
+}
+
+/* TEXTO */
+.card strong {
+  color: #fff;
+  font-size: 16px;
+}
+
+.card div {
+  margin-top: 5px;
+  color: #ccc;
+  font-size: 14px;
+}
+
+/* STATUS */
+.status {
+  margin-top: 10px;
+  color: #00e676;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+/* VAZIO */
+.empty {
+  text-align: center;
+  margin-top: 60px;
+  color: #c59d5f;
+  font-size: 16px;
+}
+
+/* HOVER CARD */
+.card:hover {
+  transform: translateY(-2px);
+  transition: 0.2s;
+  box-shadow: 0 0 15px rgba(197,157,95,0.15);
+}
+.btn-apagar {
+  background: #ff3b3b;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-left: 10px;
+  transition: 0.2s;
+  font-size: 16px;
+}
+
+.btn-apagar:hover {
+  background: #e60000;
+  transform: scale(1.05);
+}
