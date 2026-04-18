@@ -88,7 +88,7 @@ function selecionarDia(elemento, data) {
 
   horariosDiv.innerHTML = "<h3>Carregando horários...</h3>";
 
-  fetch(`${API}/agendamentos/${dataFormatada}`)
+  fetch(`${API}/agendamentos/data/${dataFormatada}`)
     .then(async res => {
       if (!res.ok) throw new Error("Erro API horários");
       return res.json();
@@ -171,7 +171,9 @@ confirmarNomeBtn.addEventListener("click", () => {
     return;
   }
 
-  const dataFormatada = dataSelecionada.toISOString().split("T")[0];
+const dataFormatada = `${dataSelecionada.getFullYear()}-${String(
+  dataSelecionada.getMonth() + 1
+).padStart(2, "0")}-${String(dataSelecionada.getDate()).padStart(2, "0")}`;
   const horarioFinal = horarioSelecionado;
 
   // 🔥 MONTA WHATSAPP ANTES (IMPORTANTE)
