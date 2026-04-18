@@ -45,13 +45,23 @@ async function carregarAgendamentos() {
       btnConcluir.innerText = "✔ Concluir";
 
       btnConcluir.addEventListener("click", async () => {
-  console.log("ID:", item.id);
+  try {
+    const res = await fetch(`${API}/agendamentos/concluir/${item.id}`, {
+      method: "PUT"
+    });
 
-  await fetch(`${API}/agendamentos/concluir/${item.id}`, {
-    method: "PUT"
-  });
+    console.log("STATUS:", res.status);
 
-  alert("clicou");
+    const text = await res.text();
+    console.log("RESPOSTA:", text);
+
+    if (!res.ok) throw new Error("Falhou");
+
+    carregarAgendamentos();
+  } catch (err) {
+    console.log(err);
+    alert("Erro ao concluir agendamento");
+  }
 });
 
       // BOTÃO CANCELAR
