@@ -134,5 +134,7 @@ header a:hover {
   white-space: nowrap;
 }
 @media (max-width: 500px) {
+header{
 
+}
 }
