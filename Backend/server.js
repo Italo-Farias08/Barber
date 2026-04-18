@@ -136,6 +136,15 @@ app.delete("/agendamentos/concluidos", (req, res) => {
     res.json({ erro: "Erro ao apagar concluídos" });
   }
 });
+app.post("/login", (req, res) => {
+  const { user, password } = req.body;
+
+  if (user === "admin" && password === "123") {
+    return res.json({ sucesso: true });
+  }
+
+  return res.json({ erro: "Credenciais inválidas" });
+});
 
 // =========================
 // CANCELAR / ID (DEIXA POR ÚLTIMO)
